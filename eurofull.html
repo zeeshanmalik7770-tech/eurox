@@ -1,0 +1,2347 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>EUROX Consultants | Client Management System</title>
+  <!-- Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <!-- Icons -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <!-- Chart.js -->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+  <!-- SheetJS -->
+  <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
+  <style>
+    :root {
+      --primary: #dc2626;     /* Red as primary color */
+      --primary-dark: #b91c1c;
+      --primary-light: #ef4444;
+      --secondary: #1a56db;   /* Blue as secondary */
+      --success: #0e9f6e;
+      --warning: #f05252;
+      --danger: #991b1b;
+      --bg: #fef2f2;          /* Light red background */
+      --panel: #ffffff;
+      --muted: #6b7280;
+      --text: #1f2937;
+      --border: #fecaca;      /* Light red border */
+      --input-bg: #ffffff;
+      --card: #ffffff;
+      --shadow: 0 1px 3px rgba(0,0,0,0.1);
+      --shadow-hover: 0 4px 6px rgba(220, 38, 38, 0.15);
+      --radius: 8px;
+      --transition: all 0.2s ease;
+    }
+    
+    * { 
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+    
+    html, body { 
+      height: 100%;
+      scroll-behavior: smooth;
+    }
+    
+    body {
+      font-family: 'Inter', system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      line-height: 1.6;
+    }
+    
+    .container { 
+      max-width: 1600px; 
+      margin: 0 auto; 
+      padding: 0 20px; 
+    }
+    
+    /* Login Styles */
+    .login-container {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      min-height: 100vh;
+      background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
+      padding: 20px;
+    }
+    
+    .login-card {
+      background: var(--panel);
+      border-radius: var(--radius);
+      box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+      padding: 40px;
+      width: 100%;
+      max-width: 440px;
+    }
+    
+    .login-logo {
+      text-align: center;
+      margin-bottom: 30px;
+    }
+    
+    .login-icon {
+      width: 60px;
+      height: 60px;
+      background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+      border-radius: 12px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin: 0 auto 15px;
+      color: white;
+      font-size: 24px;
+    }
+    
+    .login-title {
+      font-size: 24px;
+      font-weight: 700;
+      margin-bottom: 8px;
+      text-align: center;
+      color: var(--text);
+    }
+    
+    .login-subtitle {
+      font-size: 14px;
+      color: var(--muted);
+      text-align: center;
+      margin-bottom: 30px;
+    }
+    
+    .login-form {
+      display: flex;
+      flex-direction: column;
+      gap: 20px;
+    }
+    
+    .login-field {
+      display: flex;
+      flex-direction: column;
+    }
+    
+    .login-field input {
+      padding: 12px 16px;
+      border-radius: var(--radius);
+      border: 1px solid var(--border);
+      background: var(--input-bg);
+      color: var(--text);
+      font-size: 14px;
+      outline: none;
+      transition: var(--transition);
+    }
+    
+    .login-field input:focus {
+      border-color: var(--primary);
+      box-shadow: 0 0 0 3px rgba(220, 38, 38, 0.1);
+    }
+    
+    .login-field label {
+      font-size: 14px;
+      color: var(--muted);
+      margin-bottom: 8px;
+      font-weight: 500;
+    }
+    
+    .login-error {
+      color: var(--danger);
+      font-size: 14px;
+      margin-top: 10px;
+      text-align: center;
+      display: none;
+      padding: 10px;
+      background: rgba(153, 27, 27, 0.05);
+      border-radius: var(--radius);
+    }
+    
+    /* Header Styles */
+    header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 20px 0;
+      margin-bottom: 20px;
+      border-bottom: 1px solid var(--border);
+      background: linear-gradient(to right, var(--primary), var(--primary-dark));
+      border-radius: var(--radius);
+      padding: 20px;
+      color: white;
+    }
+    
+    .logo {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+    
+    .logo-icon {
+      width: 40px;
+      height: 40px;
+      background: rgba(255, 255, 255, 0.3);
+      border-radius: 10px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: white;
+    }
+    
+    .logo-text {
+      font-size: 22px;
+      font-weight: 700;
+      letter-spacing: .3px;
+      color: white;
+    }
+    
+    .logo-subtext {
+      font-size: 12px;
+      color: rgba(255, 255, 255, 0.8);
+      margin-top: 2px;
+    }
+    
+    .actions { 
+      display: flex; 
+      gap: 12px; 
+      flex-wrap: wrap; 
+    }
+    
+    /* Navigation Tabs */
+    .nav-tabs {
+      display: flex;
+      background: white;
+      border-radius: var(--radius);
+      overflow: hidden;
+      margin-bottom: 20px;
+      box-shadow: var(--shadow);
+    }
+    
+    .nav-tab {
+      padding: 15px 20px;
+      cursor: pointer;
+      font-weight: 500;
+      transition: var(--transition);
+      border-bottom: 3px solid transparent;
+      text-align: center;
+      flex: 1;
+    }
+    
+    .nav-tab.active {
+      border-bottom-color: var(--primary);
+      color: var(--primary);
+      background: rgba(220, 38, 38, 0.05);
+    }
+    
+    .nav-tab i {
+      margin-right: 8px;
+    }
+    
+    /* Button Styles */
+    button, .btn {
+      appearance: none;
+      border: none;
+      border-radius: var(--radius);
+      padding: 10px 16px;
+      font-weight: 500;
+      cursor: pointer;
+      background: var(--panel);
+      color: var(--text);
+      border: 1px solid var(--border);
+      box-shadow: var(--shadow);
+      transition: var(--transition);
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      text-decoration: none;
+      font-size: 14px;
+    }
+    
+    button:hover, .btn:hover { 
+      transform: translateY(-1px); 
+      border-color: var(--primary-light);
+      box-shadow: var(--shadow-hover);
+    }
+    
+    button.primary { 
+      background: linear-gradient(135deg, var(--primary), var(--primary-dark)); 
+      color: white; 
+      border: none; 
+    }
+    
+    button.primary:hover {
+      background: linear-gradient(135deg, var(--primary-light), var(--primary));
+    }
+    
+    button.warning { 
+      background: var(--warning); 
+      color: white; 
+      border: none; 
+    }
+    
+    button.danger { 
+      background: var(--danger); 
+      color: white; 
+      border: none; 
+    }
+    
+    button.ghost { 
+      background: transparent; 
+      border: 1px dashed var(--border); 
+    }
+    
+    /* Grid Layout - Adjusted for larger data panel */
+    .grid { 
+      display: grid; 
+      grid-template-columns: 1fr 2fr; 
+      gap: 24px;
+      margin-bottom: 40px;
+    }
+    
+    @media (max-width: 1200px) { 
+      .grid { 
+        grid-template-columns: 1fr; 
+      } 
+    }
+    
+    /* Card Styles */
+    .card {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+      overflow: hidden;
+      transition: var(--transition);
+    }
+    
+    .card:hover {
+      box-shadow: var(--shadow-hover);
+    }
+    
+    .card-header {
+      padding: 18px 20px;
+      border-bottom: 1px solid var(--border);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      background: linear-gradient(to right, rgba(220, 38, 38, 0.1), rgba(220, 38, 38, 0.05));
+    }
+    
+    .card-title {
+      font-size: 18px;
+      font-weight: 600;
+      color: var(--text);
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+    
+    .card-subtitle {
+      font-size: 13px;
+      color: var(--muted);
+      margin-top: 4px;
+    }
+    
+    /* Form Styles */
+    .form { 
+      padding: 20px; 
+      display: grid; 
+      grid-template-columns: repeat(12, 1fr); 
+      gap: 16px; 
+    }
+    
+    .field { 
+      grid-column: span 4; 
+    }
+    
+    .field.w-4 { 
+      grid-column: span 4; 
+    }
+    
+    .field.w-6 { 
+      grid-column: span 6; 
+    }
+    
+    .field.w-12 { 
+      grid-column: span 12; 
+    }
+    
+    .label { 
+      font-size: 13px; 
+      color: var(--muted); 
+      margin: 0 0 8px 6px; 
+      font-weight: 500;
+    }
+    
+    input, select, textarea {
+      width: 100%; 
+      padding: 12px 14px; 
+      border-radius: var(--radius); 
+      border: 1px solid var(--border);
+      background: var(--input-bg); 
+      color: var(--text); 
+      outline: none; 
+      transition: var(--transition);
+      font-family: inherit;
+      font-size: 14px;
+    }
+    
+    input:focus, select:focus, textarea:focus { 
+      border-color: var(--primary); 
+      box-shadow: 0 0 0 3px rgba(220, 38, 38, 0.1);
+    }
+    
+    /* Table Styles */
+    .table-wrap { 
+      padding: 0; 
+      overflow: auto; 
+      max-height: 600px;
+    }
+    
+    table { 
+      width: 100%; 
+      border-collapse: separate; 
+      border-spacing: 0; 
+      min-width: 1000px;
+    }
+    
+    thead th {
+      position: sticky; 
+      top: 0; 
+      background: linear-gradient(to right, var(--primary), var(--primary-dark)); 
+      z-index: 1;
+      text-align: left; 
+      font-size: 13px; 
+      color: white; 
+      letter-spacing: .3px; 
+      padding: 16px; 
+      border-bottom: 1px solid var(--border);
+      font-weight: 600;
+    }
+    
+    tbody td { 
+      padding: 16px; 
+      border-bottom: 1px solid var(--border); 
+      font-size: 14px;
+      vertical-align: middle;
+    }
+    
+    tbody tr { 
+      transition: var(--transition);
+    }
+    
+    tbody tr:hover { 
+      background: rgba(220, 38, 38, 0.03); 
+    }
+    
+    .tag { 
+      font-size: 12px; 
+      padding: 6px 12px; 
+      border-radius: 999px; 
+      border: 1px solid var(--border); 
+      background: var(--input-bg); 
+      display: inline-block;
+      font-weight: 500;
+    }
+    
+    .status-paid { 
+      color: var(--success); 
+      border-color: rgba(14, 159, 110, 0.3); 
+      background: rgba(14, 159, 110, 0.1); 
+    }
+    
+    .status-partial { 
+      color: var(--warning); 
+      border-color: rgba(240, 82, 82, 0.3); 
+      background: rgba(240, 82, 82, 0.1); 
+    }
+    
+    .status-unpaid { 
+      color: var(--danger); 
+      border-color: rgba(153, 27, 27, 0.3); 
+      background: rgba(153, 27, 27, 0.1); 
+    }
+    
+    .score-high { 
+      color: var(--success); 
+      border-color: rgba(14, 159, 110, 0.3); 
+      background: rgba(14, 159, 110, 0.1); 
+    }
+    
+    .score-medium { 
+      color: var(--warning); 
+      border-color: rgba(245, 158, 11, 0.3); 
+      background: rgba(245, 158, 11, 0.1); 
+    }
+    
+    .score-low { 
+      color: var(--danger); 
+      border-color: rgba(153, 27, 27, 0.3); 
+      background: rgba(153, 27, 27, 0.1); 
+    }
+    
+    /* Dashboard Styles - Made more compact */
+    .stats { 
+      display: grid; 
+      grid-template-columns: repeat(2, 1fr); 
+      gap: 12px; 
+      padding: 15px; 
+    }
+    
+    @media (max-width: 1000px) { 
+      .stats { 
+        grid-template-columns: repeat(2, 1fr); 
+      } 
+    }
+    
+    @media (max-width: 600px) { 
+      .stats { 
+        grid-template-columns: 1fr; 
+      } 
+    }
+    
+    .stat { 
+      padding: 15px; 
+      border: 1px solid var(--border); 
+      border-radius: var(--radius); 
+      background: var(--card); 
+      transition: var(--transition);
+      display: flex;
+      flex-direction: column;
+    }
+    
+    .stat:hover {
+      transform: translateY(-2px);
+      box-shadow: var(--shadow-hover);
+    }
+    
+    .stat-icon {
+      width: 35px;
+      height: 35px;
+      border-radius: 10px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin-bottom: 10px;
+      font-size: 16px;
+      color: white;
+    }
+    
+    .stat-icon.clients { background: var(--primary); }
+    .stat-icon.collected { background: var(--success); }
+    .stat-icon.remaining { background: var(--warning); }
+    .stat-icon.fees { background: var(--primary-dark); }
+    .stat-icon.leads { background: var(--secondary); }
+    .stat-icon.hot { background: var(--primary); }
+    .stat-icon.inquiries { background: var(--warning); }
+    
+    .stat .k { 
+      font-size: 20px; 
+      font-weight: 700; 
+      margin: 5px 0; 
+      color: var(--text);
+    }
+    
+    .stat .label { 
+      font-size: 13px; 
+      color: var(--muted); 
+      margin: 0; 
+    }
+    
+    .charts { 
+      display: grid; 
+      grid-template-columns: 1fr; 
+      gap: 15px; 
+      padding: 15px; 
+    }
+    
+    .chart-container {
+      background: var(--card); 
+      border: 1px solid var(--border); 
+      border-radius: var(--radius); 
+      padding: 15px;
+      position: relative;
+      height: 220px;
+    }
+    
+    .chart-title {
+      font-size: 15px;
+      font-weight: 600;
+      margin-bottom: 12px;
+      color: var(--text);
+    }
+    
+    canvas { 
+      width: 100% !important;
+      height: 180px !important;
+    }
+    
+    /* Toolbar Styles */
+    .toolbar { 
+      display: flex; 
+      align-items: center; 
+      justify-content: space-between; 
+      gap: 15px; 
+      padding: 16px 20px; 
+      border-bottom: 1px solid var(--border);
+      flex-wrap: wrap;
+      background: rgba(255, 255, 255, 0.3);
+    }
+    
+    .search { 
+      display: flex; 
+      align-items: center; 
+      gap: 10px; 
+    }
+    
+    .search-wrapper {
+      position: relative;
+    }
+    
+    .search-wrapper i {
+      position: absolute;
+      left: 15px;
+      top: 50%;
+      transform: translateY(-50%);
+      color: var(--muted);
+    }
+    
+    .search-wrapper input { 
+      width: 280px;
+      padding-left: 45px;
+    }
+    
+    /* Toast Notification */
+    .toast-container {
+      position: fixed;
+      top: 20px;
+      right: 20px;
+      z-index: 1000;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+    
+    .toast {
+      padding: 16px 20px;
+      border-radius: var(--radius);
+      background: var(--panel);
+      border: 1px solid var(--border);
+      box-shadow: var(--shadow-hover);
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      animation: slideIn 0.3s ease;
+      max-width: 350px;
+    }
+    
+    .toast.success { border-left: 4px solid var(--success); }
+    .toast.error { border-left: 4px solid var(--danger); }
+    .toast.warning { border-left: 4px solid var(--warning); }
+    .toast.info { border-left: 4px solid var(--primary); }
+    
+    .toast-icon {
+      font-size: 20px;
+    }
+    
+    .toast.success .toast-icon { color: var(--success); }
+    .toast.error .toast-icon { color: var(--danger); }
+    .toast.warning .toast-icon { color: var(--warning); }
+    .toast.info .toast-icon { color: var(--primary); }
+    
+    .toast-content {
+      flex: 1;
+    }
+    
+    .toast-title {
+      font-weight: 600;
+      margin-bottom: 4px;
+      font-size: 14px;
+    }
+    
+    .toast-message {
+      font-size: 13px;
+      color: var(--muted);
+    }
+    
+    .toast-close {
+      background: none;
+      border: none;
+      color: var(--muted);
+      cursor: pointer;
+      font-size: 18px;
+      padding: 0;
+    }
+    
+    @keyframes slideIn {
+      from { transform: translateX(100px); opacity: 0; }
+      to { transform: translateX(0); opacity: 1; }
+    }
+    
+    /* Modal */
+    .modal-overlay {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: rgba(0, 0, 0, 0.5);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      z-index: 1000;
+      opacity: 0;
+      visibility: hidden;
+      transition: var(--transition);
+    }
+    
+    .modal-overlay.active {
+      opacity: 1;
+      visibility: visible;
+    }
+    
+    .modal {
+      background: var(--panel);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow-hover);
+      width: 90%;
+      max-width: 500px;
+      padding: 25px;
+      transform: translateY(20px);
+      transition: var(--transition);
+    }
+    
+    .modal-overlay.active .modal {
+      transform: translateY(0);
+    }
+    
+    .modal-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 20px;
+    }
+    
+    .modal-title {
+      font-size: 20px;
+      font-weight: 600;
+      color: var(--text);
+    }
+    
+    .modal-close {
+      background: none;
+      border: none;
+      color: var(--muted);
+      cursor: pointer;
+      font-size: 24px;
+    }
+    
+    .modal-body {
+      margin-bottom: 25px;
+      color: var(--muted);
+      line-height: 1.5;
+    }
+    
+    .modal-footer {
+      display: flex;
+      justify-content: flex-end;
+      gap: 12px;
+    }
+    
+    /* Responsive adjustments */
+    @media (max-width: 768px) {
+      header {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 15px;
+      }
+      
+      .actions {
+        width: 100%;
+        justify-content: center;
+      }
+      
+      .nav-tabs {
+        flex-direction: column;
+      }
+      
+      .form {
+        grid-template-columns: 1fr;
+      }
+      
+      .field, .field.w-4, .field.w-6, .field.w-12 {
+        grid-column: span 1;
+      }
+      
+      .search-wrapper input {
+        width: 100%;
+      }
+      
+      .toolbar {
+        flex-direction: column;
+        align-items: flex-start;
+      }
+      
+      .search {
+        width: 100%;
+      }
+      
+      .login-card {
+        padding: 30px 20px;
+      }
+      
+      .grid {
+        grid-template-columns: 1fr;
+      }
+    }
+    
+    /* Animation for table rows */
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(10px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+    
+    tbody tr {
+      animation: fadeIn 0.3s ease;
+    }
+    
+    /* Loading spinner */
+    .spinner {
+      width: 24px;
+      height: 24px;
+      border: 3px solid rgba(0, 0, 0, 0.1);
+      border-radius: 50%;
+      border-top-color: var(--primary);
+      animation: spin 1s linear infinite;
+      display: inline-block;
+    }
+    
+    @keyframes spin {
+      to { transform: rotate(360deg); }
+    }
+    
+    /* File input styling */
+    .file-input-label {
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+    }
+    
+    /* Focus states for accessibility */
+    button:focus-visible, 
+    input:focus-visible, 
+    select:focus-visible {
+      outline: 2px solid var(--primary);
+      outline-offset: 2px;
+    }
+    
+    /* Empty state styling */
+    .empty-state {
+      text-align: center;
+      padding: 40px 20px;
+      color: var(--muted);
+    }
+    
+    .empty-state i {
+      font-size: 48px;
+      margin-bottom: 16px;
+      opacity: 0.5;
+    }
+    
+    .empty-state h3 {
+      margin-bottom: 8px;
+      color: var(--text);
+    }
+  </style>
+</head>
+<body>
+  <!-- Login Section -->
+  <div class="login-container" id="loginContainer">
+    <div class="login-card">
+      <div class="login-logo">
+        <div class="login-icon">
+          <i class="fas fa-passport"></i>
+        </div>
+        <h1 class="login-title">EUROX Consultants</h1>
+        <p class="login-subtitle">Client Management System</p>
+      </div>
+      <form id="loginForm" class="login-form">
+        <div class="login-field">
+          <label for="username">Username</label>
+          <input id="username" placeholder="Enter username" required />
+        </div>
+        <div class="login-field">
+          <label for="password">Password</label>
+          <input id="password" type="password" placeholder="Enter password" required />
+        </div>
+        <button type="submit" class="primary">
+          <i class="fas fa-sign-in-alt"></i> Login
+        </button>
+        <div class="login-error" id="loginError">Invalid username or password.</div>
+      </form>
+    </div>
+  </div>
+
+  <!-- Main Dashboard -->
+  <div class="container" id="dashboard" style="display: none;">
+    <header>
+      <div class="logo">
+        <div class="logo-icon">
+          <i class="fas fa-passport"></i>
+        </div>
+        <div>
+          <div class="logo-text">EUROX Consultants</div>
+          <div class="logo-subtext">Client Management System</div>
+        </div>
+      </div>
+      <div class="actions">
+        <button class="primary" id="btnExport">
+          <i class="fas fa-file-export"></i> Export
+        </button>
+        <label class="btn file-input-label">
+          <i class="fas fa-file-import"></i> Import
+          <input type="file" id="fileImport" accept=".xlsx,.xls" hidden />
+        </label>
+        <button class="danger" id="btnLogout">
+          <i class="fas fa-sign-out-alt"></i> Logout
+        </button>
+      </div>
+    </header>
+
+    <!-- Navigation Tabs -->
+    <div class="nav-tabs">
+      <div class="nav-tab active" data-tab="clients">
+        <i class="fas fa-users"></i> Clients
+      </div>
+      <div class="nav-tab" data-tab="leads">
+        <i class="fas fa-headset"></i> Leads
+      </div>
+    </div>
+
+    <!-- Clients Tab Content -->
+    <div id="clientsTab" class="tab-content">
+      <div class="grid">
+        <!-- Left: Compact Dashboard -->
+        <div class="card">
+          <div class="toolbar">
+            <div>
+              <div class="card-title">Dashboard</div>
+              <div class="card-subtitle">Performance metrics</div>
+            </div>
+          </div>
+          
+          <div class="stats">
+            <div class="stat">
+              <div class="stat-icon clients">
+                <i class="fas fa-users"></i>
+              </div>
+              <div class="k" id="kClients">0</div>
+              <div class="label">Total Clients</div>
+            </div>
+            <div class="stat">
+              <div class="stat-icon collected">
+                <i class="fas fa-money-bill-wave"></i>
+              </div>
+              <div class="k" id="kCollected">0</div>
+              <div class="label">Collected (Paid)</div>
+            </div>
+            <div class="stat">
+              <div class="stat-icon remaining">
+                <i class="fas fa-clock"></i>
+              </div>
+              <div class="k" id="kRemaining">0</div>
+              <div class="label">Remaining</div>
+            </div>
+            <div class="stat">
+              <div class="stat-icon fees">
+                <i class="fas fa-coins"></i>
+              </div>
+              <div class="k" id="kFees">0</div>
+              <div class="label">Consultancy Fees</div>
+            </div>
+          </div>
+          
+          <div class="charts">
+            <div class="chart-container">
+              <div class="chart-title">Clients by Visa Type</div>
+              <canvas id="chartVisa"></canvas>
+            </div>
+            <div class="chart-container">
+              <div class="chart-title">Collections by Vendor</div>
+              <canvas id="chartVendor"></canvas>
+            </div>
+          </div>
+        </div>
+
+        <!-- Right: Expanded Data Panel -->
+        <div class="card">
+          <div class="toolbar">
+            <div>
+              <div class="card-title">Client Records</div>
+              <div class="card-subtitle">Add clients, track fees and collections</div>
+            </div>
+            <div class="search">
+              <div class="search-wrapper">
+                <i class="fas fa-search"></i>
+                <input id="search" placeholder="Search clients..." />
+              </div>
+              <button id="btnClear">Clear</button>
+            </div>
+          </div>
+          
+          <form id="clientForm" class="form" autocomplete="off">
+            <div class="field w-4">
+              <div class="label">Client ID</div>
+              <input id="clientId" placeholder="Auto-generated if empty" />
+            </div>
+            <div class="field w-4">
+              <div class="label">Full Name *</div>
+              <input id="name" required placeholder="e.g., Ali Khan" />
+            </div>
+            <div class="field w-4">
+              <div class="label">Cell Number</div>
+              <input id="cell" placeholder="e.g., 03xx-xxxxxxx" />
+            </div>
+            <div class="field w-4">
+              <div class="label">Visa Type</div>
+              <select id="visaType">
+                <option>Student Visa</option>
+                <option>Visit Visa</option>
+                <option>Immigration</option>
+                <option>Work Visa</option>
+                <option>Business Visa</option>
+              </select>
+            </div>
+            <div class="field w-4">
+              <div class="label">Vendor</div>
+              <input id="vendor" placeholder="e.g., ABC Travels" />
+            </div>
+            <div class="field w-4">
+              <div class="label">Total Amount (PKR)</div>
+              <input id="total" type="number" min="0" step="1" placeholder="e.g., 500000" />
+            </div>
+            <div class="field w-4">
+              <div class="label">Consultancy Fee (PKR)</div>
+              <input id="fee" type="number" min="0" step="1" placeholder="e.g., 50000" />
+            </div>
+            <div class="field w-4">
+              <div class="label">Portion Paid (PKR)</div>
+              <input id="paid" type="number" min="0" step="1" placeholder="e.g., 200000" />
+            </div>
+            <div class="field w-4">
+              <div class="label">Remarks (optional)</div>
+              <input id="remarks" placeholder="e.g., advance received" />
+            </div>
+            <div class="field w-12" style="display:flex; gap:12px; justify-content:flex-end; margin-top: 10px;">
+              <button type="submit" class="primary" id="btnSave">
+                <i class="fas fa-save"></i> Save Record
+              </button>
+              <button type="button" id="btnCancel">
+                <i class="fas fa-times"></i> Cancel
+              </button>
+            </div>
+          </form>
+
+          <div class="table-wrap">
+            <table id="table">
+              <thead>
+                <tr>
+                  <th>ID</th>
+                  <th>Name</th>
+                  <th>Cell</th>
+                  <th>Visa Type</th>
+                  <th>Vendor</th>
+                  <th>Total</th>
+                  <th>Fee</th>
+                  <th>Paid</th>
+                  <th>Remaining</th>
+                  <th>Status</th>
+                  <th>Actions</th>
+                </tr>
+              </thead>
+              <tbody></tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Leads Tab Content -->
+    <div id="leadsTab" class="tab-content" style="display: none;">
+      <div class="grid">
+        <!-- Left: Leads Dashboard -->
+        <div class="card">
+          <div class="toolbar">
+            <div>
+              <div class="card-title">Leads Dashboard</div>
+              <div class="card-subtitle">Inquiry metrics and analysis</div>
+            </div>
+          </div>
+          
+          <div class="stats">
+            <div class="stat">
+              <div class="stat-icon leads">
+                <i class="fas fa-headset"></i>
+              </div>
+              <div class="k" id="kLeads">0</div>
+              <div class="label">Total Leads</div>
+            </div>
+            <div class="stat">
+              <div class="stat-icon hot">
+                <i class="fas fa-fire"></i>
+              </div>
+              <div class="k" id="kHotLeads">0</div>
+              <div class="label">Hot Leads</div>
+            </div>
+            <div class="stat">
+              <div class="stat-icon inquiries">
+                <i class="fas fa-calendar"></i>
+              </div>
+              <div class="k" id="kRecentLeads">0</div>
+              <div class="label">Recent Inquiries (7d)</div>
+            </div>
+            <div class="stat">
+              <div class="stat-icon clients">
+                <i class="fas fa-user-check"></i>
+              </div>
+              <div class="k" id="kConverted">0</div>
+              <div class="label">Converted to Clients</div>
+            </div>
+          </div>
+          
+          <div class="charts">
+            <div class="chart-container">
+              <div class="chart-title">Leads by Course Interest</div>
+              <canvas id="chartCourse"></canvas>
+            </div>
+            <div class="chart-container">
+              <div class="chart-title">Leads by Inquiry Score</div>
+              <canvas id="chartScore"></canvas>
+            </div>
+          </div>
+        </div>
+
+        <!-- Right: Leads Management Panel -->
+        <div class="card">
+          <div class="toolbar">
+            <div>
+              <div class="card-title">Lead Records</div>
+              <div class="card-subtitle">Manage inquiries and potential clients</div>
+            </div>
+            <div class="search">
+              <div class="search-wrapper">
+                <i class="fas fa-search"></i>
+                <input id="searchLeads" placeholder="Search leads..." />
+              </div>
+              <button id="btnClearLeads">Clear</button>
+            </div>
+          </div>
+          
+          <form id="leadForm" class="form" autocomplete="off">
+            <div class="field w-4">
+              <div class="label">Lead ID</div>
+              <input id="leadId" placeholder="Auto-generated if empty" />
+            </div>
+            <div class="field w-4">
+              <div class="label">Full Name *</div>
+              <input id="leadName" required placeholder="e.g., Ali Khan" />
+            </div>
+            <div class="field w-4">
+              <div class="label">Contact Number *</div>
+              <input id="leadContact" required placeholder="e.g., 03xx-xxxxxxx" />
+            </div>
+            <div class="field w-4">
+              <div class="label">Email</div>
+              <input id="leadEmail" type="email" placeholder="e.g., ali@example.com" />
+            </div>
+            <div class="field w-4">
+              <div class="label">Inquiry Date</div>
+              <input id="inquiryDate" type="date" />
+            </div>
+            <div class="field w-4">
+              <div class="label">Course Interested</div>
+              <select id="courseInterested">
+                <option>Student Visa</option>
+                <option>Visit Visa</option>
+                <option>Immigration</option>
+                <option>Work Visa</option>
+                <option>Business Visa</option>
+                <option>Other</option>
+              </select>
+            </div>
+            <div class="field w-4">
+              <div class="label">Inquiry Score</div>
+              <select id="inquiryScore">
+                <option value="High">High (Hot Lead)</option>
+                <option value="Medium">Medium (Warm Lead)</option>
+                <option value="Low">Low (Cold Lead)</option>
+              </select>
+            </div>
+            <div class="field w-8">
+              <div class="label">Remarks</div>
+              <textarea id="leadRemarks" rows="2" placeholder="Additional notes about this lead..."></textarea>
+            </div>
+            <div class="field w-12" style="display:flex; gap:12px; justify-content:flex-end; margin-top: 10px;">
+              <button type="submit" class="primary" id="btnSaveLead">
+                <i class="fas fa-save"></i> Save Lead
+              </button>
+              <button type="button" id="btnCancelLead">
+                <i class="fas fa-times"></i> Cancel
+              </button>
+              <button type="button" class="warning" id="btnConvertToClient">
+                <i class="fas fa-user-check"></i> Convert to Client
+              </button>
+            </div>
+          </form>
+
+          <div class="table-wrap">
+            <table id="leadsTable">
+              <thead>
+                <tr>
+                  <th>ID</th>
+                  <th>Name</th>
+                  <th>Contact</th>
+                  <th>Email</th>
+                  <th>Inquiry Date</th>
+                  <th>Course</th>
+                  <th>Score</th>
+                  <th>Remarks</th>
+                  <th>Actions</th>
+                </tr>
+              </thead>
+              <tbody></tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Toast Container -->
+  <div class="toast-container" id="toastContainer"></div>
+  
+  <!-- Confirmation Modal -->
+  <div class="modal-overlay" id="modalConfirm">
+    <div class="modal">
+      <div class="modal-header">
+        <div class="modal-title">Confirm Action</div>
+        <button class="modal-close" id="modalClose">&times;</button>
+      </div>
+      <div class="modal-body">
+        <p id="modalMessage">Are you sure you want to perform this action?</p>
+      </div>
+      <div class="modal-footer">
+        <button class="ghost" id="modalCancel">Cancel</button>
+        <button class="danger" id="modalConfirmBtn">Confirm</button>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // ======= State =======
+    const LS_KEY = 'visa_consultancy_crm_v2';
+    const LS_LEADS_KEY = 'visa_consultancy_leads_v1';
+    
+    /** @type {Array} */
+    let rows = [];
+    /** @type {Array} */
+    let leads = [];
+    
+    let editIndex = null; // index currently being edited
+    let editLeadIndex = null; // lead index currently being edited
+    let pendingAction = null; // for modal confirmations
+    const credentials = {
+      username: 'Usmaneurox',
+      password: 'UsmanEuro*@123'
+    };
+
+    // ======= Utils =======
+    const money = n => (Number(n)||0).toLocaleString(undefined,{maximumFractionDigits:0});
+    const uid = () => 'C' + Math.random().toString(36).slice(2,8).toUpperCase();
+    const leadUid = () => 'L' + Math.random().toString(36).slice(2,8).toUpperCase();
+    const statusOf = (total, paid) => {
+      total = Number(total)||0; paid = Number(paid)||0;
+      if (paid <= 0) return 'Unpaid';
+      if (paid >= total) return 'Paid';
+      return 'Partial';
+    }
+    const remainingOf = (total, paid) => Math.max((Number(total)||0) - (Number(paid)||0), 0);
+    
+    const saveLS = () => {
+      localStorage.setItem(LS_KEY, JSON.stringify(rows));
+      localStorage.setItem(LS_LEADS_KEY, JSON.stringify(leads));
+    }
+    
+    const loadLS = () => {
+      try { rows = JSON.parse(localStorage.getItem(LS_KEY)||'[]'); } catch { rows = []; }
+      try { leads = JSON.parse(localStorage.getItem(LS_LEADS_KEY)||'[]'); } catch { leads = []; }
+    }
+    
+    // Toast notification system
+    function showToast(type, title, message, duration = 5000) {
+      const toastContainer = document.getElementById('toastContainer');
+      const toast = document.createElement('div');
+      toast.className = `toast ${type}`;
+      
+      const icons = {
+        success: 'fa-check-circle',
+        error: 'fa-exclamation-circle',
+        warning: 'fa-exclamation-triangle',
+        info: 'fa-info-circle'
+      };
+      
+      toast.innerHTML = `
+        <i class="fas ${icons[type]} toast-icon"></i>
+        <div class="toast-content">
+          <div class="toast-title">${title}</div>
+          <div class="toast-message">${message}</div>
+        </div>
+        <button class="toast-close">&times;</button>
+      `;
+      
+      toastContainer.appendChild(toast);
+      
+      // Auto remove after duration
+      const timeout = setTimeout(() => {
+        toast.remove();
+      }, duration);
+      
+      // Manual close
+      toast.querySelector('.toast-close').addEventListener('click', () => {
+        clearTimeout(timeout);
+        toast.remove();
+      });
+    }
+
+    // Modal functions
+    function showModal(message, confirmCallback) {
+      const modal = document.getElementById('modalConfirm');
+      const modalMessage = document.getElementById('modalMessage');
+      const modalConfirmBtn = document.getElementById('modalConfirmBtn');
+      
+      modalMessage.textContent = message;
+      pendingAction = confirmCallback;
+      
+      modal.classList.add('active');
+    }
+    
+    function hideModal() {
+      const modal = document.getElementById('modalConfirm');
+      modal.classList.remove('active');
+      pendingAction = null;
+    }
+
+    // Tab switching
+    function switchTab(tabName) {
+      // Update tab UI
+      document.querySelectorAll('.nav-tab').forEach(tab => {
+        tab.classList.remove('active');
+      });
+      document.querySelector(`.nav-tab[data-tab="${tabName}"]`).classList.add('active');
+      
+      // Show correct content
+      document.querySelectorAll('.tab-content').forEach(content => {
+        content.style.display = 'none';
+      });
+      document.getElementById(`${tabName}Tab`).style.display = 'block';
+      
+      // Refresh data if needed
+      if (tabName === 'leads') {
+        renderLeadsTable();
+        recalcLeads();
+      } else if (tabName === 'clients') {
+        renderTable();
+        recalc();
+      }
+    }
+
+    // ======= DOM =======
+    const tbody = document.querySelector('#table tbody');
+    const leadsTbody = document.querySelector('#leadsTable tbody');
+    const form = document.querySelector('#clientForm');
+    const leadForm = document.querySelector('#leadForm');
+    const loginForm = document.querySelector('#loginForm');
+    const loginContainer = document.querySelector('#loginContainer');
+    const dashboard = document.querySelector('#dashboard');
+    const el = id => document.getElementById(id);
+
+    function clearForm() {
+      form.reset();
+      editIndex = null;
+      el('btnSave').innerHTML = '<i class="fas fa-save"></i> Save Record';
+      el('clientId').removeAttribute('readonly');
+    }
+
+    function clearLeadForm() {
+      leadForm.reset();
+      editLeadIndex = null;
+      el('btnSaveLead').innerHTML = '<i class="fas fa-save"></i> Save Lead';
+      el('leadId').removeAttribute('readonly');
+      el('inquiryDate').valueAsDate = new Date(); // Set default to today
+    }
+
+    function readForm() {
+      return {
+        id: el('clientId').value.trim() || uid(),
+        name: el('name').value.trim(),
+        cell: el('cell').value.trim(),
+        visaType: el('visaType').value,
+        vendor: el('vendor').value.trim(),
+        total: Number(el('total').value||0),
+        fee: Number(el('fee').value||0),
+        paid: Number(el('paid').value||0),
+        remarks: el('remarks').value.trim(),
+        createdAt: editIndex !== null ? rows[editIndex].createdAt : new Date().toISOString(),
+        updatedAt: new Date().toISOString()
+      };
+    }
+
+    function readLeadForm() {
+      return {
+        id: el('leadId').value.trim() || leadUid(),
+        name: el('leadName').value.trim(),
+        contact: el('leadContact').value.trim(),
+        email: el('leadEmail').value.trim(),
+        inquiryDate: el('inquiryDate').value || new Date().toISOString().split('T')[0],
+        courseInterested: el('courseInterested').value,
+        inquiryScore: el('inquiryScore').value,
+        remarks: el('leadRemarks').value.trim(),
+        createdAt: editLeadIndex !== null ? leads[editLeadIndex].createdAt : new Date().toISOString(),
+        updatedAt: new Date().toISOString()
+      };
+    }
+
+    function fillForm(r) {
+      el('clientId').value = r.id;
+      el('clientId').setAttribute('readonly', true);
+      el('name').value = r.name;
+      el('cell').value = r.cell;
+      el('visaType').value = r.visaType;
+      el('vendor').value = r.vendor;
+      el('total').value = r.total;
+      el('fee').value = r.fee;
+      el('paid').value = r.paid;
+      el('remarks').value = r.remarks||'';
+    }
+
+    function fillLeadForm(r) {
+      el('leadId').value = r.id;
+      el('leadId').setAttribute('readonly', true);
+      el('leadName').value = r.name;
+      el('leadContact').value = r.contact;
+      el('leadEmail').value = r.email||'';
+      el('inquiryDate').value = r.inquiryDate;
+      el('courseInterested').value = r.courseInterested;
+      el('inquiryScore').value = r.inquiryScore;
+      el('leadRemarks').value = r.remarks||'';
+    }
+
+    function renderTable() {
+      const q = el('search').value.toLowerCase();
+      tbody.innerHTML = '';
+      
+      if (rows.length === 0) {
+        tbody.innerHTML = `
+          <tr>
+            <td colspan="11" style="text-align: center; padding: 40px; color: var(--muted);">
+              <i class="fas fa-inbox" style="font-size: 40px; margin-bottom: 15px; display: block; opacity: 0.5;"></i>
+              <div>No client records found.</div>
+              <div style="font-size: 13px; margin-top: 10px;">Add a new client to get started.</div>
+            </td>
+          </tr>
+        `;
+        return;
+      }
+      
+      const filteredRows = rows.filter(r => !q || [
+        r.id, r.name, r.cell, r.vendor, r.visaType, r.remarks
+      ].join(' ').toLowerCase().includes(q));
+      
+      if (filteredRows.length === 0) {
+        tbody.innerHTML = `
+          <tr>
+            <td colspan="11" style="text-align: center; padding: 40px; color: var(--muted);">
+              <i class="fas fa-search" style="font-size: 40px; margin-bottom: 15px; display: block; opacity: 0.5;"></i>
+              <div>No clients match your search.</div>
+              <div style="font-size: 13px; margin-top: 10px;">Try different search terms.</div>
+            </td>
+          </tr>
+        `;
+        return;
+      }
+      
+      filteredRows.forEach((r, i) => {
+        const remaining = remainingOf(r.total, r.paid);
+        const st = statusOf(r.total, r.paid);
+        const tr = document.createElement('tr');
+        tr.innerHTML = `
+          <td>${r.id}</td>
+          <td>${r.name||''}</td>
+          <td>${r.cell||''}</td>
+          <td><span class="tag">${r.visaType||''}</span></td>
+          <td>${r.vendor||''}</td>
+          <td>${money(r.total)}</td>
+          <td>${money(r.fee)}</td>
+          <td>${money(r.paid)}</td>
+          <td>${money(remaining)}</td>
+          <td>
+            <span class="tag ${st==='Paid'?'status-paid': st==='Partial'?'status-partial':'status-unpaid'}">${st}</span>
+          </td>
+          <td>
+            <button data-edit="${i}"><i class="fas fa-edit"></i></button>
+            <button data-del="${i}" class="danger"><i class="fas fa-trash"></i></button>
+          </td>`;
+        tbody.appendChild(tr);
+      });
+    }
+
+    function renderLeadsTable() {
+      const q = el('searchLeads').value.toLowerCase();
+      leadsTbody.innerHTML = '';
+      
+      if (leads.length === 0) {
+        leadsTbody.innerHTML = `
+          <tr>
+            <td colspan="9" style="text-align: center; padding: 40px; color: var(--muted);">
+              <i class="fas fa-inbox" style="font-size: 40px; margin-bottom: 15px; display: block; opacity: 0.5;"></i>
+              <div>No lead records found.</div>
+              <div style="font-size: 13px; margin-top: 10px;">Add a new lead to get started.</div>
+            </td>
+          </tr>
+        `;
+        return;
+      }
+      
+      const filteredLeads = leads.filter(r => !q || [
+        r.id, r.name, r.contact, r.email, r.courseInterested, r.remarks
+      ].join(' ').toLowerCase().includes(q));
+      
+      if (filteredLeads.length === 0) {
+        leadsTbody.innerHTML = `
+          <tr>
+            <td colspan="9" style="text-align: center; padding: 40px; color: var(--muted);">
+              <i class="fas fa-search" style="font-size: 40px; margin-bottom: 15px; display: block; opacity: 0.5;"></i>
+              <div>No leads match your search.</div>
+              <div style="font-size: 13px; margin-top: 10px;">Try different search terms.</div>
+            </td>
+          </tr>
+        `;
+        return;
+      }
+      
+      filteredLeads.forEach((r, i) => {
+        const tr = document.createElement('tr');
+        tr.innerHTML = `
+          <td>${r.id}</td>
+          <td>${r.name||''}</td>
+          <td>${r.contact||''}</td>
+          <td>${r.email||''}</td>
+          <td>${new Date(r.inquiryDate).toLocaleDateString()}</td>
+          <td><span class="tag">${r.courseInterested||''}</span></td>
+          <td>
+            <span class="tag ${r.inquiryScore==='High'?'score-high': r.inquiryScore==='Medium'?'score-medium':'score-low'}">${r.inquiryScore}</span>
+          </td>
+          <td>${(r.remarks||'').substring(0, 30)}${(r.remarks||'').length > 30 ? '...' : ''}</td>
+          <td>
+            <button data-edit-lead="${i}"><i class="fas fa-edit"></i></button>
+            <button data-del-lead="${i}" class="danger"><i class="fas fa-trash"></i></button>
+          </td>`;
+        leadsTbody.appendChild(tr);
+      });
+    }
+
+    function recalc() {
+      // Update stats cards
+      el('kClients').textContent = rows.length;
+      const collected = rows.reduce((s,r)=> s + (Number(r.paid)||0), 0);
+      const total = rows.reduce((s,r)=> s + (Number(r.total)||0), 0);
+      const remaining = rows.reduce((s,r)=> s + remainingOf(r.total, r.paid), 0);
+      const fees = rows.reduce((s,r)=> s + (Number(r.fee)||0), 0);
+      el('kCollected').textContent = money(collected);
+      el('kRemaining').textContent = money(remaining);
+      el('kFees').textContent = money(fees);
+
+      // Update charts
+      updateCharts();
+    }
+
+    function recalcLeads() {
+      // Update leads stats
+      el('kLeads').textContent = leads.length;
+      
+      // Count hot leads (score = High)
+      const hotLeads = leads.filter(lead => lead.inquiryScore === 'High').length;
+      el('kHotLeads').textContent = hotLeads;
+      
+      // Count recent leads (last 7 days)
+      const sevenDaysAgo = new Date();
+      sevenDaysAgo.setDate(sevenDaysAgo.getDate() - 7);
+      const recentLeads = leads.filter(lead => {
+        const leadDate = new Date(lead.inquiryDate);
+        return leadDate >= sevenDaysAgo;
+      }).length;
+      el('kRecentLeads').textContent = recentLeads;
+      
+      // Count converted leads (leads that exist in clients)
+      const convertedLeads = leads.filter(lead => 
+        rows.some(client => 
+          client.name === lead.name && 
+          (client.cell === lead.contact || client.cell.includes(lead.contact) || lead.contact.includes(client.cell))
+        )
+      ).length;
+      el('kConverted').textContent = convertedLeads;
+      
+      // Update leads charts
+      updateLeadsCharts();
+    }
+
+    // Event listeners for table actions
+    tbody.addEventListener('click', (e) => {
+      const t = e.target;
+      const button = t.closest('button');
+      
+      if (!button) return;
+      
+      if (button.hasAttribute('data-edit')) {
+        editIndex = Number(button.getAttribute('data-edit'));
+        fillForm(rows[editIndex]);
+        el('btnSave').innerHTML = '<i class="fas fa-save"></i> Update Record';
+        window.scrollTo({ top: 0, behavior:'smooth' });
+      }
+      
+      if (button.hasAttribute('data-del')) {
+        const i = Number(button.getAttribute('data-del'));
+        showModal('Are you sure you want to delete this client record?', () => {
+          rows.splice(i,1); 
+          saveLS(); 
+          renderTable(); 
+          recalc();
+          showToast('success', 'Success', 'Client record deleted successfully.');
+        });
+      }
+    });
+
+    // Event listeners for leads table actions
+    leadsTbody.addEventListener('click', (e) => {
+      const t = e.target;
+      const button = t.closest('button');
+      
+      if (!button) return;
+      
+      if (button.hasAttribute('data-edit-lead')) {
+        editLeadIndex = Number(button.getAttribute('data-edit-lead'));
+        fillLeadForm(leads[editLeadIndex]);
+        el('btnSaveLead').innerHTML = '<i class="fas fa-save"></i> Update Lead';
+        window.scrollTo({ top: 0, behavior:'smooth' });
+      }
+      
+      if (button.hasAttribute('data-del-lead')) {
+        const i = Number(button.getAttribute('data-del-lead'));
+        showModal('Are you sure you want to delete this lead?', () => {
+          leads.splice(i,1); 
+          saveLS(); 
+          renderLeadsTable(); 
+          recalcLeads();
+          showToast('success', 'Success', 'Lead deleted successfully.');
+        });
+      }
+    });
+
+    // Form submission
+    form.addEventListener('submit', (e) => {
+      e.preventDefault();
+      const r = readForm();
+      
+      if (!r.name) { 
+        showToast('error', 'Validation Error', 'Client name is required.');
+        el('name').focus();
+        return; 
+      }
+      
+      if (editIndex === null) { 
+        rows.unshift(r); 
+        showToast('success', 'Success', 'New client added successfully.');
+      } else { 
+        rows[editIndex] = r; 
+        showToast('success', 'Success', 'Client record updated successfully.');
+      }
+      
+      saveLS(); 
+      renderTable(); 
+      recalc(); 
+      clearForm();
+    });
+
+    // Lead form submission
+    leadForm.addEventListener('submit', (e) => {
+      e.preventDefault();
+      const r = readLeadForm();
+      
+      if (!r.name) { 
+        showToast('error', 'Validation Error', 'Lead name is required.');
+        el('leadName').focus();
+        return; 
+      }
+      
+      if (!r.contact) { 
+        showToast('error', 'Validation Error', 'Contact number is required.');
+        el('leadContact').focus();
+        return; 
+      }
+      
+      if (editLeadIndex === null) { 
+        leads.unshift(r); 
+        showToast('success', 'Success', 'New lead added successfully.');
+      } else { 
+        leads[editLeadIndex] = r; 
+        showToast('success', 'Success', 'Lead updated successfully.');
+      }
+      
+      saveLS(); 
+      renderLeadsTable(); 
+      recalcLeads(); 
+      clearLeadForm();
+    });
+
+    // Convert lead to client
+    el('btnConvertToClient').addEventListener('click', () => {
+      if (editLeadIndex === null) {
+        showToast('warning', 'Action Required', 'Please select a lead to convert first.');
+        return;
+      }
+      
+      const lead = leads[editLeadIndex];
+      
+      // Pre-fill client form with lead data
+      clearForm();
+      el('name').value = lead.name;
+      el('cell').value = lead.contact;
+      
+      if (['Student Visa', 'Visit Visa', 'Immigration', 'Work Visa', 'Business Visa'].includes(lead.courseInterested)) {
+        el('visaType').value = lead.courseInterested;
+      }
+      
+      el('remarks').value = `Converted from lead ${lead.id}. ${lead.remarks || ''}`;
+      
+      // Switch to clients tab
+      switchTab('clients');
+      
+      showToast('success', 'Lead Converted', 'Lead information has been transferred to client form.');
+    });
+
+    // Cancel buttons
+    el('btnCancel').addEventListener('click', clearForm);
+    el('btnCancelLead').addEventListener('click', clearLeadForm);
+    
+    // Search functionality
+    el('search').addEventListener('input', () => renderTable());
+    el('btnClear').addEventListener('click', () => { 
+      el('search').value=''; 
+      renderTable(); 
+    });
+    
+    el('searchLeads').addEventListener('input', () => renderLeadsTable());
+    el('btnClearLeads').addEventListener('click', () => { 
+      el('searchLeads').value=''; 
+      renderLeadsTable(); 
+    });
+
+    // Tab switching
+    document.querySelectorAll('.nav-tab').forEach(tab => {
+      tab.addEventListener('click', () => {
+        switchTab(tab.getAttribute('data-tab'));
+      });
+    });
+
+    // ======= Excel Export =======
+    el('btnExport').addEventListener('click', () => {
+      const activeTab = document.querySelector('.nav-tab.active').getAttribute('data-tab');
+      
+      if (activeTab === 'clients') {
+        exportClients();
+      } else if (activeTab === 'leads') {
+        exportLeads();
+      }
+    });
+
+    function exportClients() {
+      if (rows.length === 0) {
+        showToast('warning', 'Export Failed', 'No client data available to export.');
+        return;
+      }
+      
+      try {
+        const dataSheet = [['Client ID','Name','Cell Number','Visa Type','Vendor','Total Amount','Consultancy Fee','Portion Paid','Portion Remaining','Payment Status','Remarks', 'Created At', 'Updated At']];
+        rows.forEach(r => {
+          const rem = remainingOf(r.total, r.paid);
+          dataSheet.push([
+            r.id, r.name, r.cell, r.visaType, r.vendor, r.total, r.fee, r.paid, rem, 
+            statusOf(r.total, r.paid), r.remarks||'', 
+            new Date(r.createdAt).toLocaleDateString(), 
+            new Date(r.updatedAt).toLocaleDateString()
+          ]);
+        });
+        
+        const wb = XLSX.utils.book_new();
+        const wsData = XLSX.utils.aoa_to_sheet(dataSheet);
+        XLSX.utils.book_append_sheet(wb, wsData, 'Client Data');
+
+        // Dashboard sheet
+        const totalClients = rows.length;
+        const collected = rows.reduce((s,r) => s + (Number(r.paid)||0), 0);
+        const remaining = rows.reduce((s,r) => s + remainingOf(r.total, r.paid), 0);
+        const fees = rows.reduce((s,r) => s + (Number(r.fee)||0), 0);
+        const wsDash = XLSX.utils.aoa_to_sheet([
+          ['Metric','Value'],
+          ['Total Clients', totalClients],
+          ['Collected (Paid)', collected],
+          ['Remaining', remaining],
+          ['Consultancy Fees', fees],
+        ]);
+        XLSX.utils.book_append_sheet(wb, wsDash, 'Dashboard Summary');
+
+        XLSX.writeFile(wb, `eurox_clients_export_${new Date().toISOString().slice(0,10)}.xlsx`);
+        showToast('success', 'Export Successful', 'Client data has been exported to Excel successfully.');
+      } catch (error) {
+        showToast('error', 'Export Failed', 'An error occurred while exporting client data.');
+        console.error('Export error:', error);
+      }
+    }
+
+    function exportLeads() {
+      if (leads.length === 0) {
+        showToast('warning', 'Export Failed', 'No lead data available to export.');
+        return;
+      }
+      
+      try {
+        const dataSheet = [['Lead ID','Name','Contact Number','Email','Inquiry Date','Course Interested','Inquiry Score','Remarks', 'Created At', 'Updated At']];
+        leads.forEach(r => {
+          dataSheet.push([
+            r.id, r.name, r.contact, r.email, r.inquiryDate, r.courseInterested, r.inquiryScore, 
+            r.remarks||'', 
+            new Date(r.createdAt).toLocaleDateString(), 
+            new Date(r.updatedAt).toLocaleDateString()
+          ]);
+        });
+        
+        const wb = XLSX.utils.book_new();
+        const wsData = XLSX.utils.aoa_to_sheet(dataSheet);
+        XLSX.utils.book_append_sheet(wb, wsData, 'Leads Data');
+
+        // Dashboard sheet
+        const totalLeads = leads.length;
+        const hotLeads = leads.filter(lead => lead.inquiryScore === 'High').length;
+        const mediumLeads = leads.filter(lead => lead.inquiryScore === 'Medium').length;
+        const lowLeads = leads.filter(lead => lead.inquiryScore === 'Low').length;
+        
+        const wsDash = XLSX.utils.aoa_to_sheet([
+          ['Metric','Value'],
+          ['Total Leads', totalLeads],
+          ['Hot Leads (High Score)', hotLeads],
+          ['Warm Leads (Medium Score)', mediumLeads],
+          ['Cold Leads (Low Score)', lowLeads],
+        ]);
+        XLSX.utils.book_append_sheet(wb, wsDash, 'Leads Summary');
+
+        XLSX.writeFile(wb, `eurox_leads_export_${new Date().toISOString().slice(0,10)}.xlsx`);
+        showToast('success', 'Export Successful', 'Leads data has been exported to Excel successfully.');
+      } catch (error) {
+        showToast('error', 'Export Failed', 'An error occurred while exporting leads data.');
+        console.error('Export error:', error);
+      }
+    }
+
+    // ======= Excel Import =======
+    el('fileImport').addEventListener('change', (evt) => {
+      const activeTab = document.querySelector('.nav-tab.active').getAttribute('data-tab');
+      
+      if (activeTab === 'clients') {
+        importClients(evt);
+      } else if (activeTab === 'leads') {
+        importLeads(evt);
+      }
+    });
+
+    function importClients(evt) {
+      const file = evt.target.files[0];
+      if (!file) return;
+      
+      const reader = new FileReader();
+      reader.onload = (e) => {
+        try {
+          const wb = XLSX.read(new Uint8Array(e.target.result), {type:'array'});
+          const ws = wb.Sheets['Client Data'] || wb.Sheets[wb.SheetNames[0]];
+          const arr = XLSX.utils.sheet_to_json(ws, {header:1});
+          
+          if (!arr.length || arr.length < 2) { 
+            showToast('error', 'Import Failed', 'No valid data found in the Excel file.');
+            return; 
+          }
+          
+          const header = arr[0].map(h => String(h||'').trim());
+          const idx = (name) => header.findIndex(h => h.toLowerCase() === name.toLowerCase());
+          
+          const map = {
+            id: idx('Client ID'),
+            name: idx('Name'),
+            cell: idx('Cell Number'),
+            visaType: idx('Visa Type'),
+            vendor: idx('Vendor'),
+            total: idx('Total Amount'),
+            fee: idx('Consultancy Fee'),
+            paid: idx('Portion Paid'),
+            remarks: idx('Remarks')
+          };
+          
+          if (map.name === -1) {
+            showToast('error', 'Import Failed', 'The Excel file must contain a "Name" column.');
+            return;
+          }
+          
+          const next = [];
+          for (let i=1; i<arr.length; i++) {
+            const row = arr[i]; 
+            if (!row || row.length===0) continue;
+            
+            next.push({
+              id: row[map.id] || uid(),
+              name: row[map.name] || '',
+              cell: row[map.cell] || '',
+              visaType: row[map.visaType] || 'Visit Visa',
+              vendor: row[map.vendor] || '',
+              total: Number(row[map.total]||0),
+              fee: Number(row[map.fee]||0),
+              paid: Number(row[map.paid]||0),
+              remarks: row[map.remarks] || '',
+              createdAt: new Date().toISOString(),
+              updatedAt: new Date().toISOString()
+            });
+          }
+          
+          rows = next; 
+          saveLS(); 
+          renderTable(); 
+          recalc();
+          evt.target.value = '';
+          
+          showToast('success', 'Import Successful', `${next.length} client records imported successfully.`);
+        } catch (error) {
+          showToast('error', 'Import Failed', 'An error occurred while importing client data.');
+          console.error('Import error:', error);
+        }
+      };
+      reader.readAsArrayBuffer(file);
+    }
+
+    function importLeads(evt) {
+      const file = evt.target.files[0];
+      if (!file) return;
+      
+      const reader = new FileReader();
+      reader.onload = (e) => {
+        try {
+          const wb = XLSX.read(new Uint8Array(e.target.result), {type:'array'});
+          const ws = wb.Sheets['Leads Data'] || wb.Sheets[wb.SheetNames[0]];
+          const arr = XLSX.utils.sheet_to_json(ws, {header:1});
+          
+          if (!arr.length || arr.length < 2) { 
+            showToast('error', 'Import Failed', 'No valid data found in the Excel file.');
+            return; 
+          }
+          
+          const header = arr[0].map(h => String(h||'').trim());
+          const idx = (name) => header.findIndex(h => h.toLowerCase() === name.toLowerCase());
+          
+          const map = {
+            id: idx('Lead ID'),
+            name: idx('Name'),
+            contact: idx('Contact Number'),
+            email: idx('Email'),
+            inquiryDate: idx('Inquiry Date'),
+            courseInterested: idx('Course Interested'),
+            inquiryScore: idx('Inquiry Score'),
+            remarks: idx('Remarks')
+          };
+          
+          if (map.name === -1) {
+            showToast('error', 'Import Failed', 'The Excel file must contain a "Name" column.');
+            return;
+          }
+          
+          const next = [];
+          for (let i=1; i<arr.length; i++) {
+            const row = arr[i]; 
+            if (!row || row.length===0) continue;
+            
+            // Format date if it's not already in YYYY-MM-DD format
+            let inquiryDate = row[map.inquiryDate] || new Date().toISOString().split('T')[0];
+            if (typeof inquiryDate === 'string' && inquiryDate.includes('/')) {
+              const dateParts = inquiryDate.split('/');
+              if (dateParts.length === 3) {
+                inquiryDate = `${dateParts[2]}-${dateParts[0].padStart(2, '0')}-${dateParts[1].padStart(2, '0')}`;
+              }
+            }
+            
+            next.push({
+              id: row[map.id] || leadUid(),
+              name: row[map.name] || '',
+              contact: row[map.contact] || '',
+              email: row[map.email] || '',
+              inquiryDate: inquiryDate,
+              courseInterested: row[map.courseInterested] || 'Other',
+              inquiryScore: row[map.inquiryScore] || 'Medium',
+              remarks: row[map.remarks] || '',
+              createdAt: new Date().toISOString(),
+              updatedAt: new Date().toISOString()
+            });
+          }
+          
+          leads = next; 
+          saveLS(); 
+          renderLeadsTable(); 
+          recalcLeads();
+          evt.target.value = '';
+          
+          showToast('success', 'Import Successful', `${next.length} lead records imported successfully.`);
+        } catch (error) {
+          showToast('error', 'Import Failed', 'An error occurred while importing lead data.');
+          console.error('Import error:', error);
+        }
+      };
+      reader.readAsArrayBuffer(file);
+    }
+
+    // ======= Charts =======
+    let chartVisa, chartVendor, chartCourse, chartScore;
+    
+    function updateCharts() {
+      // Visa type distribution by count
+      const typeCounts = {};
+      rows.forEach(r => { 
+        typeCounts[r.visaType] = (typeCounts[r.visaType]||0) + 1; 
+      });
+      
+      const visaLabels = Object.keys(typeCounts);
+      const visaValues = Object.values(typeCounts);
+      const ctx1 = document.getElementById('chartVisa');
+      
+      if (chartVisa) chartVisa.destroy();
+      
+      if (visaLabels.length > 0) {
+        chartVisa = new Chart(ctx1, {
+          type: 'pie',
+          data: { 
+            labels: visaLabels, 
+            datasets: [{ 
+              data: visaValues,
+              backgroundColor: [
+                'rgba(220, 38, 38, 0.7)', /* Red */
+                'rgba(26, 86, 219, 0.7)',
+                'rgba(63, 131, 248, 0.7)',
+                'rgba(255, 255, 255, 0.7)', /* 30% white */
+                'rgba(14, 159, 110, 0.7)',
+              ],
+              borderColor: [
+                'rgba(220, 38, 38, 1)', /* Red */
+                'rgba(26, 86, 219, 1)',
+                'rgba(63, 131, 248, 1)',
+                'rgba(255, 255, 255, 1)', /* White */
+                'rgba(14, 159, 110, 1)',
+              ],
+              borderWidth: 1
+            }] 
+          },
+          options: { 
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: { 
+              legend: { 
+                position: 'right',
+                labels: { 
+                  color: '#333333',
+                  font: { size: 12 }
+                } 
+              },
+              tooltip: {
+                callbacks: {
+                  label: (context) => {
+                    const label = context.label || '';
+                    const value = context.raw || 0;
+                    const total = context.dataset.data.reduce((a, b) => a + b, 0);
+                    const percentage = Math.round((value / total) * 100);
+                    return `${label}: ${value} (${percentage}%)`;
+                  }
+                }
+              }
+            } 
+          }
+        });
+      } else {
+        ctx1.getContext('2d').clearRect(0, 0, ctx1.width, ctx1.height);
+      }
+
+      // Vendor collections (sum paid)
+      const vendorPaid = {};
+      rows.forEach(r => { 
+        vendorPaid[r.vendor||'—'] = (vendorPaid[r.vendor||'—']||0) + (Number(r.paid)||0); 
+      });
+      
+      const venLabels = Object.keys(vendorPaid);
+      const venValues = Object.values(vendorPaid);
+      const ctx2 = document.getElementById('chartVendor');
+      
+      if (chartVendor) chartVendor.destroy();
+      
+      if (venLabels.length > 0) {
+        chartVendor = new Chart(ctx2, {
+          type: 'bar',
+          data: { 
+            labels: venLabels, 
+            datasets: [{ 
+              data: venValues,
+              backgroundColor: 'rgba(220, 38, 38, 0.7)',
+              borderColor: 'rgba(220, 38, 38, 1)',
+              borderWidth: 1
+            }] 
+          },
+          options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: { 
+              legend: { display: false }, 
+              tooltip: { 
+                callbacks: { 
+                  label: (ctx) => 'PKR ' + ctx.parsed.y.toLocaleString() 
+                } 
+              } 
+            },
+            scales: {
+              x: { 
+                ticks: { 
+                  color: '#333333',
+                  font: { size: 12 }
+                }, 
+                grid: { color: '#e5e7eb' } 
+              },
+              y: { 
+                ticks: { 
+                  color: '#333333', 
+                  callback: (v) => 'PKR ' + Number(v).toLocaleString(),
+                  font: { size: 12 }
+                }, 
+                grid: { color: '#e5e7eb' } 
+              }
+            }
+          }
+        });
+      } else {
+        ctx2.getContext('2d').clearRect(0, 0, ctx2.width, ctx2.height);
+      }
+    }
+
+    function updateLeadsCharts() {
+      // Course interest distribution
+      const courseCounts = {};
+      leads.forEach(lead => { 
+        courseCounts[lead.courseInterested] = (courseCounts[lead.courseInterested]||0) + 1; 
+      });
+      
+      const courseLabels = Object.keys(courseCounts);
+      const courseValues = Object.values(courseCounts);
+      const ctx1 = document.getElementById('chartCourse');
+      
+      if (chartCourse) chartCourse.destroy();
+      
+      if (courseLabels.length > 0) {
+        chartCourse = new Chart(ctx1, {
+          type: 'doughnut',
+          data: { 
+            labels: courseLabels, 
+            datasets: [{ 
+              data: courseValues,
+              backgroundColor: [
+                'rgba(220, 38, 38, 0.7)', /* Red */
+                'rgba(26, 86, 219, 0.7)',
+                'rgba(63, 131, 248, 0.7)',
+                'rgba(255, 159, 64, 0.7)',
+                'rgba(14, 159, 110, 0.7)',
+                'rgba(139, 92, 246, 0.7)',
+              ],
+              borderColor: [
+                'rgba(220, 38, 38, 1)', /* Red */
+                'rgba(26, 86, 219, 1)',
+                'rgba(63, 131, 248, 1)',
+                'rgba(255, 159, 64, 1)',
+                'rgba(14, 159, 110, 1)',
+                'rgba(139, 92, 246, 1)',
+              ],
+              borderWidth: 1
+            }] 
+          },
+          options: { 
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: { 
+              legend: { 
+                position: 'right',
+                labels: { 
+                  color: '#333333',
+                  font: { size: 12 }
+                } 
+              },
+              tooltip: {
+                callbacks: {
+                  label: (context) => {
+                    const label = context.label || '';
+                    const value = context.raw || 0;
+                    const total = context.dataset.data.reduce((a, b) => a + b, 0);
+                    const percentage = Math.round((value / total) * 100);
+                    return `${label}: ${value} (${percentage}%)`;
+                  }
+                }
+              }
+            } 
+          }
+        });
+      } else {
+        ctx1.getContext('2d').clearRect(0, 0, ctx1.width, ctx1.height);
+      }
+
+      // Inquiry score distribution
+      const scoreCounts = {
+        'High': 0,
+        'Medium': 0,
+        'Low': 0
+      };
+      
+      leads.forEach(lead => { 
+        if (scoreCounts.hasOwnProperty(lead.inquiryScore)) {
+          scoreCounts[lead.inquiryScore] += 1;
+        }
+      });
+      
+      const scoreLabels = Object.keys(scoreCounts);
+      const scoreValues = Object.values(scoreCounts);
+      const ctx2 = document.getElementById('chartScore');
+      
+      if (chartScore) chartScore.destroy();
+      
+      if (leads.length > 0) {
+        chartScore = new Chart(ctx2, {
+          type: 'bar',
+          data: { 
+            labels: scoreLabels, 
+            datasets: [{ 
+              data: scoreValues,
+              backgroundColor: [
+                'rgba(220, 38, 38, 0.7)', // High - Red
+                'rgba(245, 158, 11, 0.7)', // Medium - Amber
+                'rgba(156, 163, 175, 0.7)' // Low - Gray
+              ],
+              borderColor: [
+                'rgba(220, 38, 38, 1)',
+                'rgba(245, 158, 11, 1)',
+                'rgba(156, 163, 175, 1)'
+              ],
+              borderWidth: 1
+            }] 
+          },
+          options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: { 
+              legend: { display: false }, 
+              tooltip: { 
+                callbacks: { 
+                  label: (ctx) => ctx.parsed.y + ' leads' 
+                } 
+              } 
+            },
+            scales: {
+              x: { 
+                ticks: { 
+                  color: '#333333',
+                  font: { size: 12 }
+                }, 
+                grid: { color: '#e5e7eb' } 
+              },
+              y: { 
+                ticks: { 
+                  color: '#333333', 
+                  font: { size: 12 }
+                }, 
+                grid: { color: '#e5e7eb' } 
+              }
+            }
+          }
+        });
+      } else {
+        ctx2.getContext('2d').clearRect(0, 0, ctx2.width, ctx2.height);
+      }
+    }
+
+    // ======= Login Handling =======
+    loginForm.addEventListener('submit', (e) => {
+      e.preventDefault();
+      const username = el('username').value.trim();
+      const password = el('password').value;
+      
+      if (username === credentials.username && password === credentials.password) {
+        loginContainer.style.display = 'none';
+        dashboard.style.display = 'block';
+        init();
+      } else {
+        el('loginError').style.display = 'block';
+        setTimeout(() => {
+          el('loginError').style.display = 'none';
+        }, 5000);
+      }
+    });
+
+    // Logout Handling
+    el('btnLogout').addEventListener('click', () => {
+      loginContainer.style.display = 'flex';
+      dashboard.style.display = 'none';
+      loginForm.reset();
+    });
+
+    // ======= Modal Event Listeners =======
+    document.getElementById('modalClose').addEventListener('click', hideModal);
+    document.getElementById('modalCancel').addEventListener('click', hideModal);
+    document.getElementById('modalConfirmBtn').addEventListener('click', () => {
+      if (pendingAction) {
+        pendingAction();
+        hideModal();
+      }
+    });
+
+    // Close modal when clicking outside
+    document.getElementById('modalConfirm').addEventListener('click', (e) => {
+      if (e.target === document.getElementById('modalConfirm')) {
+        hideModal();
+      }
+    });
+
+    // ======= Init =======
+    function init() {
+      loadLS();
+      renderTable();
+      renderLeadsTable();
+      recalc();
+      recalcLeads();
+      
+      // Set default inquiry date to today
+      el('inquiryDate').valueAsDate = new Date();
+      
+      if (rows.length === 0 && leads.length === 0) {
+        setTimeout(() => {
+          showToast('info', 'Welcome to EUROX Consultants CRM', 'Add your first client or lead to get started.', 8000);
+        }, 1000);
+      }
+    }
+  </script>
+</body>
+</html>
